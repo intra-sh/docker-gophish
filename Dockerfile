@@ -13,7 +13,7 @@ RUN npm install
 RUN gulp
 
 # Build Golang binary
-FROM golang:1.15.2 AS build-golang
+FROM golang:1.22 AS build-golang
 
 ENV GITHUB_USER="kgretzky"
 ENV GOPHISH_REPOSITORY="github.com/${GITHUB_USER}/gophish"
