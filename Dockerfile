@@ -19,8 +19,8 @@ ENV GITHUB_USER="kgretzky"
 ENV GOPHISH_REPOSITORY="github.com/${GITHUB_USER}/gophish"
 ENV GOPHISH_VERSION="v0.12.1"
 
-RUN git clone https://${GOPHISH_REPOSITORY} /go/src/github.com/${GITHUB_USER}/gophish
-WORKDIR /go/src/github.com/${GITHUB_USER}/gophish
+RUN git clone https://${GOPHISH_REPOSITORY} /go/src/github.com/gophish/gophish
+WORKDIR /go/src/github.com/gophish/gophish
 RUN git checkout ${GOPHISH_VERSION}
 RUN go get -v && go build -v
 
