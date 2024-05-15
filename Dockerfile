@@ -1,29 +1,40 @@
 FROM node:latest AS build-js
 
+ENV GITHUB_USER="kgretzky"
+ENV GOPHISH_REPOSITORY="github.com/${GITHUB_USER}/gophish"
+ENV GOPHISH_VERSION="v0.12.1"
+
 RUN npm install gulp gulp-cli -g
 
-RUN git clone https://github.com/warhorse/gophish /build
+RUN git clone https://${GOPHISH_REPOSITORY} /build
 WORKDIR /build
+RUN git checkout ${GOPHISH_VERSION}
 RUN npm install --only=dev
 RUN gulp
 
 # Build Golang binary
 FROM golang:1.15.2 AS build-golang
 
-RUN git clone https://github.com/warhorse/gophish /go/src/github.com/warhorse/gophish
-WORKDIR /go/src/github.com/warhorse/gophish
+ENV GITHUB_USER="kgretzky"
+ENV GOPHISH_REPOSITORY="github.com/${GITHUB_USER}/gophish"
+ENV GOPHISH_VERSION="v0.12.1"
+
+RUN git clone https://${GOPHISH_REPOSITORY} /go/src/github.com/${GITHUB_USER}/gophish
+WORKDIR /go/src/github.com/${GITHUB_USER}/gophish
+RUN git checkout ${GOPHISH_VERSION}
 RUN go get -v && go build -v
 
 # Runtime container
 FROM debian:stable-slim
 
-ENV GITHUB_USER="gophish"
+ENV GITHUB_USER="kgretzky"
 ENV GOPHISH_REPOSITORY="github.com/${GITHUB_USER}/gophish"
 ENV PROJECT_DIR="${GOPATH}/src/${GOPHISH_REPOSITORY}"
+ENV GOPHISH_VERSION="v0.12.1"
 
 ARG BUILD_RFC3339="1970-01-01T00:00:00Z"
 ARG COMMIT="local"
-ARG VERSION="v0.0.1"
+ARG VERSION="${GOPHISH_VERSION}"
 
 RUN useradd -m -d /opt/gophish -s /bin/bash app
 
@@ -62,9 +73,9 @@ ARG VERSION
 LABEL org.label-schema.build-date=$BUILD_DATE \
   org.label-schema.name="Gophish Docker" \
   org.label-schema.description="Gophish Docker Build" \
-  org.label-schema.url="https://github.com/war-horse/docker-gophish" \
+  org.label-schema.url="https://github.com/${GITHUB_USER}/docker-gophish" \
   org.label-schema.vcs-ref=$VCS_REF \
-  org.label-schema.vcs-url="https://github.com/war-horse/docker-gophish" \
-  org.label-schema.vendor="warhorse" \
+  org.label-schema.vcs-url="https://github.com/${GITHUB_USER}/docker-gophish" \
+  org.label-schema.vendor="${GITHUB_USER}" \
   org.label-schema.version=$VERSION \
   org.label-schema.schema-version="1.0"
