@@ -9,7 +9,7 @@ RUN npm install gulp gulp-cli -g
 RUN git clone https://${GOPHISH_REPOSITORY} /build
 WORKDIR /build
 RUN git checkout ${GOPHISH_VERSION}
-RUN npm install --only=dev
+RUN npm install
 RUN gulp
 
 # Build Golang binary
